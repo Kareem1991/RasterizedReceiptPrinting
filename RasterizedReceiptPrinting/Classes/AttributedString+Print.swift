@@ -51,6 +51,36 @@ public extension NSAttributedString {
         UIGraphicsEndImageContext()
         return image
     }
+     public func rasterizeKitchenPrint(width: CGFloat) -> UIImage? {
+        
+        let options: NSStringDrawingOptions = [.usesLineFragmentOrigin, .truncatesLastVisibleLine]
+        let dataRect = boundingRect(with: CGSize(width: width, height: 10000), options: options, context: nil)
+        let dataSize = dataRect.size
+        if UIScreen.main.responds(to: #selector(NSDecimalNumberBehaviors.scale)) {
+            if UIScreen.main.scale == 2.0 {
+                UIGraphicsBeginImageContextWithOptions(dataSize, false, 1.0)
+            } else {
+                UIGraphicsBeginImageContext(dataSize)
+            }
+        } else {
+            UIGraphicsBeginImageContext(dataSize)
+        }
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return nil
+        }
+        UIColor.white.set()
+//        let rect = CGRect(x: 0, y: 0, width: dataSize.width + 1, height: dataSize.height + 1)
+        let rect = CGRect(x: (dataSize.width - width) / 2.0, y: 0, width: width, height:  dataSize.height )
+
+        context.fill(rect)
+        self.draw(in: rect)
+        // Build the image
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+            return nil
+        }
+        UIGraphicsEndImageContext()
+        return image
+    }
 }
 
 /// Extension NSMutableAttributedString to append string with NSAttributedString
